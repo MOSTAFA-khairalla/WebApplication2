@@ -1,0 +1,51 @@
+﻿@model WebApplication2.Models.CountryCityViewModel
+
+@{
+    ViewData["Title"] = "Cascading Dropdown Lists";
+}
+
+<h2>Cascading Dropdown Lists</h2>
+
+<form>
+    <div>
+        <label for="country">Country:</label>
+        <select id="country" asp-for="SelectedCountryId" class="form-control">
+            <option value="">Select a country</option>
+            @foreach (var country in Model.Countries)
+            {
+                <option value="@country.CountryId">@country.CountryName</option>
+            }
+        </select>
+    </div>
+    <div>
+        <label for="city">City:</label>
+        <select id="city" asp-for="SelectedCityId" class="form-control">
+            <option value="">Select a city</option>
+            @foreach (var city in Model.Cities)
+            {
+                <option value="@city.CityId">@city.CityName</option>
+            }
+        </select>
+    </div>
+</form>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#country').change(function () {
+                var countryId = $(this).val();
+                $('#city').empty();
+                $('#city').append('<option value="">Select a city</option>');
+
+                if (countryId !== '') {
+                    $.getJSON('/Cascading/GetCities', { countryId: countryId }, function (data) {
+                        $.each(data, function (i, city) {
+                            $('#city').append('<option value="' + city.cityId + '">' + city.cityName + '</option>');
+                        });
+                    });
+                }
+            });
+        });
+    </script>
+}
